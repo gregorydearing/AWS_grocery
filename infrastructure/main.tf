@@ -94,13 +94,9 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-# -------------------
-# Key Pair
-# -------------------
-
 resource "aws_key_pair" "hello_key" {
   key_name   = "hello-key"
-  public_key = file("~/.ssh/id_rsa.pub")
+  public_key = file("~/Downloads/hello-key.pub")
 }
 
 # -------------------
@@ -117,5 +113,6 @@ resource "aws_instance" "web" {
   tags = {
     Name = "grocery-web"
   }
+
 }
 
