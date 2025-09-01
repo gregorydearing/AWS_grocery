@@ -3,3 +3,13 @@ frontend/frontend-build.zip
 frontend/temp_extract/
 frontend/src/config.js~
 venv/
+# Terraform state and backups
+*.tfstate
+*.tfstate.*
+*.backup
+.terraform/
+*.lock.hcl
+
+# Prevent nested git repo from being tracked
+infrastructure/AWS_grocery.git/
+
