@@ -1,14 +1,12 @@
-# GroceryMate
+# GroceryMate AWS Deployment 🚀
 
-## 🏆 GroceryMate E-Commerce Platform
+## 🏆 GroceryMate E-Commerce Platform on AWS
 
-[![Python](https://img.shields.io/badge/Language-Python%2C%20JavaScript-blue)](https://www.python.org/)
-[![OS](https://img.shields.io/badge/OS-Linux%2C%20Windows%2C%20macOS-green)](https://www.kernel.org/)
+[![Python](https://img.shields.io/badge/Language-Python-blue)](https://www.python.org/)
 [![Database](https://img.shields.io/badge/Database-PostgreSQL-336791)](https://www.postgresql.org/)
-[![GitHub Release](https://img.shields.io/github/v/release/AlejandroRomanIbanez/AWS_grocery)](https://github.com/AlejandroRomanIbanez/AWS_grocery/releases/tag/v2.0.0)
-[![Free](https://img.shields.io/badge/Free_for_Non_Commercial_Use-brightgreen)](#-license)
+[![AWS](https://img.shields.io/badge/AWS-Terraform-orange)](https://aws.amazon.com/)
 
-⭐ **Star us on GitHub** — it motivates us a lot!
+⭐ **Star this repo** if you find it useful!
 
 ---
 
@@ -16,61 +14,72 @@
 
 - [Overview](#-overview)
 - [Features](#-features)
-- [Screenshots & Demo](#-screenshots--demo)
+- [Architecture](#-architecture)
 - [Prerequisites](#-prerequisites)
-- [Installation](#-installation)
-  - [Clone Repository](#-clone-repository)
-  - [Configure PostgreSQL](#-configure-postgresql)
-  - [Populate Database](#-populate-database)
-  - [Set Up Python Environment](#-set-up-python-environment)
-  - [Set Environment Variables](#-set-environment-variables)
-  - [Start the Application](#-start-the-application)
+- [Infrastructure Setup](#-infrastructure-setup)
+- [Application Setup](#-application-setup)
 - [Usage](#-usage)
+- [AWS Cost Considerations](#-aws-cost-considerations)
 - [Contributing](#-contributing)
 - [License](#-license)
 
+---
+
 ## 🚀 Overview
 
-GroceryMate is an application developed as part of the Masterschools program by **Alejandro Roman Ibanez**. It is a modern, full-featured e-commerce platform designed for seamless online grocery shopping. It provides an intuitive user interface and a secure backend, allowing users to browse products, manage their shopping basket, and complete purchases efficiently.
+This project demonstrates how to deploy **GroceryMate**, a simple e-commerce application, onto **AWS** using **Terraform**.  
+The infrastructure is provisioned in a **single-tier architecture** with:
 
-GroceryMate is a modern, full-featured e-commerce platform designed for seamless online grocery shopping. It provides an intuitive user interface and a secure backend, allowing users to browse products, manage their shopping basket, and complete purchases efficiently.
+- **EC2 instance** (running the app with Docker)  
+- **RDS PostgreSQL** (database for products & users)  
+- **S3 bucket** (for storing user avatars)  
+- **Networking (VPC, subnet, Internet Gateway, security groups)**  
+
+The goal is to show practical cloud skills while keeping the design minimal for learning.
+
+---
 
 ## 🛒 Features
 
-- **🛡️ User Authentication**: Secure registration, login, and session management.
-- **🔒 Protected Routes**: Access control for authenticated users.
-- **🔎 Product Search & Filtering**: Browse products, apply filters, and sort by category or price.
-- **⭐ Favorites Management**: Save preferred products.
-- **🛍️ Shopping Basket**: Add, view, modify, and remove items.
-- **💳 Checkout Process**:
-  - Secure billing and shipping information handling.
-  - Multiple payment options.
-  - Automatic total price calculation.
+- **🛡️ Authentication**: Secure user registration & login  
+- **🔎 Product browsing** with search/filter  
+- **🛍️ Shopping basket** & checkout flow  
+- **⭐ Favorites** for users  
+- **☁️ Cloud hosting** with AWS + Terraform IaC  
 
-## 📸 Screenshots & Demo
+---
 
-![imagen](https://github.com/user-attachments/assets/ea039195-67a2-4bf2-9613-2ee1e666231a)
-![imagen](https://github.com/user-attachments/assets/a87e5c50-5a9e-45b8-ad16-2dbff41acd00)
-![imagen](https://github.com/user-attachments/assets/589aae62-67ef-4496-bd3b-772cd32ca386)
-![imagen](https://github.com/user-attachments/assets/2772b85e-81f7-446a-9296-4fdc2b652cb7)
+## 🏗️ Architecture
 
-https://github.com/user-attachments/assets/d1c5c8e4-5b16-486a-b709-4cf6e6cce6bc
+Here’s the AWS architecture diagram created for this project:  
+
+![AWS Diagram](https://drive.google.com/uc?export=view&id=11fJrfckB0hW6zeEof8zznq1YHnLDDMkl)
+
+**Key components:**
+- **VPC** with one public subnet  
+- **EC2 instance** (t3.micro) running the Dockerized application  
+- **RDS PostgreSQL database** for backend data  
+- **S3 bucket** with versioning enabled for avatar storage  
+- **Internet Gateway** for external access  
+- **Security Groups** for HTTP (80), Flask app (5000), and SSH (22)  
+
+---
 
 ## 📋 Prerequisites
 
-Ensure the following dependencies are installed before running the application:
+- **Terraform >= 1.3**  
+- **AWS CLI** configured with `aws configure`  
+- **Docker** installed (for building and testing locally)  
+- **PostgreSQL client** (optional for testing DB)  
 
-- **🐍 Python (>=3.11)**
-- **🐘 PostgreSQL** – Database for storing product and user information.
-- **🛠️ Git** – Version control system.
+---
 
-## ⚙️ Installation
+## ⚙️ Infrastructure Setup
 
-### 🔹 Clone Repository
-
-```sh
-git clone --branch version2 https://github.com/AlejandroRomanIbanez/AWS_grocery.git && cd AWS_grocery
-```
+1. Clone this repository:
+   ```bash
+   git clone --branch version2 https://github.com/gregorydearing/AWS_grocery.git
+   cd AWS_grocery/infrastructure
 
 ### 🔹 Configure PostgreSQL
 
