@@ -23,3 +23,8 @@ output "ec2_public_dns" {
   value       = aws_instance.web.public_dns
 }
 
+output "s3_bucket_name" {
+  description = "The name of the S3 bucket"
+  value       = aws_s3_bucket.app_bucket.id
+}
+
