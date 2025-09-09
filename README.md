@@ -1,12 +1,11 @@
-# GroceryMate AWS Deployment 🚀
+# GroceryMate AWS E-Commerce Platform
 
-## 🏆 GroceryMate E-Commerce Platform on AWS
-
-[![Python](https://img.shields.io/badge/Language-Python-blue)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Language-Python%2C%20JavaScript-blue)](https://www.python.org/)
+[![OS](https://img.shields.io/badge/OS-Linux%2C%20Windows%2C%20macOS-green)](https://www.kernel.org/)
 [![Database](https://img.shields.io/badge/Database-PostgreSQL-336791)](https://www.postgresql.org/)
-[![AWS](https://img.shields.io/badge/AWS-Terraform-orange)](https://aws.amazon.com/)
+[![Free](https://img.shields.io/badge/Free_for_Non_Commercial_Use-brightgreen)](#license)
 
-⭐ **Star this repo** if you find it useful!
+⭐ **Star us on GitHub** — it motivates us a lot!
 
 ---
 
@@ -14,12 +13,12 @@
 
 - [Overview](#-overview)
 - [Features](#-features)
-- [Architecture](#-architecture)
-- [Prerequisites](#-prerequisites)
-- [Infrastructure Setup](#-infrastructure-setup)
-- [Application Setup](#-application-setup)
+- [Architecture Diagram](-#-architecture-diagram)
+- [Screenshots & Demo](#-screenshots--demo)
+- [Infrastructure Setup](-#-infrastructure-setup)
+- [PostgreSQL Setup](#-postgresql-setup)
+- [Docker & Backend Setup](#-docker--backend-setup)
 - [Usage](#-usage)
-- [AWS Cost Considerations](#-aws-cost-considerations)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -27,158 +26,224 @@
 
 ## 🚀 Overview
 
-This project demonstrates how to deploy **GroceryMate**, a simple e-commerce application, onto **AWS** using **Terraform**.  
-The infrastructure is provisioned in a **single-tier architecture** with:
-
-- **EC2 instance** (running the app with Docker)  
-- **RDS PostgreSQL** (database for products & users)  
-- **S3 bucket** (for storing user avatars)  
-- **Networking (VPC, subnet, Internet Gateway, security groups)**  
-
-The goal is to show practical cloud skills while keeping the design minimal for learning.
+GroceryMate is an e-commerce platform developed as part of the Masterschools program.  
+It is a full-featured grocery shopping application with a modern user interface, secure backend, and scalable AWS infrastructure managed by Terraform.
 
 ---
 
 ## 🛒 Features
 
-- **🛡️ Authentication**: Secure user registration & login  
-- **🔎 Product browsing** with search/filter  
-- **🛍️ Shopping basket** & checkout flow  
-- **⭐ Favorites** for users  
-- **☁️ Cloud hosting** with AWS + Terraform IaC  
+- **🛡️ User Authentication**: Secure registration, login, and session management  
+- **🔎 Product Search & Filtering**: Browse products, apply filters, and sort by category or price  
+- **⭐ Favorites Management**: Save preferred products  
+- **🛍️ Shopping Basket**: Add, view, modify, and remove items  
+- **💳 Checkout Process**: Multiple payment options and automatic total calculation  
+- **☁️ AWS Infrastructure**: EC2, VPC, S3, and RDS for scalable deployment  
 
 ---
 
-## 🏗️ Architecture
+## 🖼️ Architecture Diagram
 
-Here’s the AWS architecture diagram created for this project:  
+Here’s the AWS architecture diagram created for this project:
 
-![AWS Diagram](https://drive.google.com/uc?export=view&id=11fJrfckB0hW6zeEof8zznq1YHnLDDMkl)
+<div align="center">
+  <img width="761" height="1103" alt="GroceryMate_AWS_Architecture drawio" src="https://github.com/user-attachments/assets/0ec1f3c8-e2a8-487e-8359-991027b29ccc" />
+</div>
 
-**Key components:**
-- **VPC** with one public subnet  
-- **EC2 instance** (t3.micro) running the Dockerized application  
-- **RDS PostgreSQL database** for backend data  
-- **S3 bucket** with versioning enabled for avatar storage  
-- **Internet Gateway** for external access  
-- **Security Groups** for HTTP (80), Flask app (5000), and SSH (22)  
+> This diagram shows all major AWS resources (VPC, Subnets, EC2, S3, and RDS) and how they connect.
 
 ---
 
-## 📋 Prerequisites
+## 📸 Screenshots & Demo
 
-- **Terraform >= 1.3**  
-- **AWS CLI** configured with `aws configure`  
-- **Docker** installed (for building and testing locally)  
-- **PostgreSQL client** (optional for testing DB)  
+![imagen](https://github.com/user-attachments/assets/ea039195-67a2-4bf2-9613-2ee1e666231a)
+![imagen](https://github.com/user-attachments/assets/a87e5c50-5a9e-45b8-ad16-2dbff41acd00)
+![imagen](https://github.com/user-attachments/assets/589aae62-67ef-4496-bd3b-772cd32ca386)
+![imagen](https://github.com/user-attachments/assets/2772b85e-81f7-446a-9296-4fdc2b652cb7)
 
 ---
 
 ## ⚙️ Infrastructure Setup
 
-1. Clone this repository:
-   ```bash
-   git clone --branch version2 https://github.com/gregorydearing/AWS_grocery.git
-   cd AWS_grocery/infrastructure
+All Terraform code is in the `infrastructure` folder:
 
-### 🔹 Configure PostgreSQL
+- `main.tf` – main resources (VPC, subnet, EC2)  
+- `variables.tf` – input variables for your AWS region, CIDR blocks, AMI, and instance type  
+- `outputs.tf` – outputs like EC2 public IP and S3 bucket name  
+- `s3.tf` – S3 bucket configuration  
 
-Before creating the database user, you can choose a custom username and password to enhance security. Replace `<your_secure_password>` with a strong password of your choice in the following commands.
+### 1. Clone Repository
 
-Create database and user:
+```bash
+git clone --branch version2 https://github.com/gregorydearing/AWS_grocery.git
+cd AWS_grocery/infrastructure
+````
 
-```sh
+### 2. Prepare Terraform Variables
+
+```bash
+cp terraform.tfvars.example terraform.tfvars
+```
+
+Edit `terraform.tfvars`:
+
+```hcl
+aws_region          = "eu-north-1"
+availability_zone   = ""                 
+vpc_cidr            = "10.0.0.0/16"
+public_subnet_cidr  = "10.0.1.0/24"
+instance_type       = "t3.micro"
+ami_id              = "ami-09278528675a8d54e"
+```
+
+### 3. Initialize Terraform
+
+```bash
+terraform init
+```
+
+### 4. Plan the Infrastructure
+
+```bash
+terraform plan
+```
+
+Terraform will show which resources will be created:
+
+* VPC & Public Subnet (`main.tf`)
+* Internet Gateway & Route Table (`main.tf`)
+* Security Group (`main.tf`)
+* EC2 Instance (`main.tf`)
+* S3 Bucket (`s3.tf`)
+
+### 5. Apply the Infrastructure
+
+```bash
+terraform apply
+```
+
+Confirm the action. Terraform will create the resources listed above. Outputs include EC2 public IP, security group ID, and S3 bucket name.
+
+### 6. Connect to EC2
+
+```bash
+ssh -i ~/Downloads/hello-key ec2-user@<EC2_PUBLIC_IP>
+```
+
+---
+
+## 📋 PostgreSQL Setup
+
+### Local Setup (Optional)
+
+Before creating the database user, choose a secure password:
+
+```bash
 psql -U postgres -c "CREATE DATABASE grocerymate_db;"
-psql -U postgres -c "CREATE USER grocery_user WITH ENCRYPTED PASSWORD '<your_secure_password>';"  # Replace <your_secure_password> with a strong password of your choice
+psql -U postgres -c "CREATE USER grocery_user WITH ENCRYPTED PASSWORD '<your_secure_password>';"
 psql -U postgres -c "ALTER USER grocery_user WITH SUPERUSER;"
 ```
 
-### 🔹 Populate Database
+Populate the database:
 
-```sh
+```bash
 psql -U grocery_user -d grocerymate_db -f backend/app/sqlite_dump_clean.sql
 ```
 
-Verify insertion:
+Verify:
 
-```sh
+```bash
 psql -U grocery_user -d grocerymate_db -c "SELECT * FROM users;"
 psql -U grocery_user -d grocerymate_db -c "SELECT * FROM products;"
 ```
 
-### 🔹 Set Up Python Environment
+### AWS RDS Setup (Optional)
 
+* Create a PostgreSQL RDS instance in the same VPC as your EC2
+* Allow inbound traffic on port 5432 from your EC2 security group
+* Connect and verify:
 
-Install dependencies in an activated virtual Enviroment:
-
-```sh
-cd backend
-pip install -r requirements.txt
-```
-OR (if pip doesn't exist)
-```sh
-pip3 install -r requirements.txt
+```bash
+psql -h <RDS_ENDPOINT> -U grocery_user -d grocerymate_db
 ```
 
-### 🔹 Set Environment Variables
+* Update `.env` file with the RDS endpoint
 
-Create a `.env` file:
+---
 
-```sh
-touch .env  # macOS/Linux
-ni .env -Force  # Windows
+## 🐳 Docker & Backend Setup
+
+### 1. Install Docker on EC2
+
+```bash
+sudo yum update -y
+sudo amazon-linux-extras install docker -y
+sudo service docker start
+sudo usermod -aG docker ec2-user
+docker --version
 ```
 
-Generate a secure JWT key:
+### 2. Clone Backend Repository
 
-```sh
-python3 -c "import secrets; print(secrets.token_hex(32))"
+```bash
+git clone --branch version2 https://github.com/gregorydearing/AWS_grocery.git
+cd AWS_grocery/backend
 ```
 
-Update `.env`:
+### 3. Set Environment Variables
 
-```sh
-nano .env
+Create `.env`:
+
+```bash
+touch .env
 ```
 
-Fill in the following information (make sure to replace the placeholders):
+Fill in:
 
-```ini
+```env
 JWT_SECRET_KEY=<your_generated_key>
 POSTGRES_USER=grocery_user
 POSTGRES_PASSWORD=<your_password>
 POSTGRES_DB=grocerymate_db
-POSTGRES_HOST=localhost
+POSTGRES_HOST=<your_rds_endpoint_or_localhost>
 POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
 ```
 
-### 🔹 Start the Application
+### 4. Build and Run Docker Container
 
-```sh
-python3 run.py
+```bash
+docker build -t grocerymate-backend .
+docker run -d --env-file .env -p 5000:5000 grocerymate-backend
 ```
 
-## 📖 Usage
+---
 
-- Access the application at [http://localhost:5000](http://localhost:5000)
-- Register/Login to your account
-- Browse and search for products
-- Manage favorites and shopping basket
-- Proceed through the checkout process
+## 🌐 Usage
 
-## 🤝 Contributing
+Visit: `http://<EC2_PUBLIC_IP>:5000`
 
-We welcome contributions! Please follow these steps:
+* Register/Login
+* Browse and search products
+* Manage favorites and shopping basket
+* Checkout
 
-1. Fork the repository.
-2. Create a new feature branch (`feature/your-feature`).
-3. Implement your changes and commit them.
-4. Push your branch and create a pull request.
+> Database starts empty; use local or RDS setup to populate.
+
+---
+
+## 🧑‍💻 Contributing
+
+* Fork the repository
+* Create a feature branch (`feature/your-feature`)
+* Implement changes and commit
+* Push and create a pull request
+
+---
 
 ## 📜 License
 
-This project is licensed under the MIT License.
+MIT License
 
+---
 
-
-
+This repository and documentation were developed during the Masterschool program (2025), with special thanks to Alejandro Roman Ibanez and the support of all GroceryMate teammates.
