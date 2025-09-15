@@ -45,9 +45,10 @@ It is a full-featured grocery shopping application with a modern user interface,
 ## 🖼️ Architecture Diagram
 
 Here’s the AWS architecture diagram created for this project:
+< />
 
 <div align="center">
-  <img width="761" height="1103" alt="GroceryMate_AWS_Architecture drawio" src="https://github.com/user-attachments/assets/0ec1f3c8-e2a8-487e-8359-991027b29ccc" />
+  <img width="761" height="1079" alt="GroceryMate_AWS_Architecture drawio" src="https://github.com/user-attachments/assets/0a43394a-79ba-453e-8834-2f78e0dfb172" />
 </div>
 
 > This diagram shows all major AWS resources (VPC, Subnets, EC2, S3, and RDS) and how they connect.
