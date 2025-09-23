@@ -82,20 +82,20 @@ resource "aws_security_group" "ec2_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "Flask backend"
+    from_port   = 5000
+    to_port     = 5000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  ingress {
-     from_port   = 5000
-     to_port     = 5000
-     protocol    = "tcp"
-     cidr_blocks = ["0.0.0.0/0"]  # Or your IP for security
-  }
- 
 
   tags = {
     Name = "grocery-ec2-sg"
@@ -121,6 +121,64 @@ resource "aws_instance" "web" {
   tags = {
     Name = "grocery-web"
   }
-
 }
+
+# -------------------
+# RDS PostgreSQL
+# -------------------
+
+# Security group for RDS (allow Postgres only from EC2 SG)
+resource "aws_security_group" "rds_sg" {
+  name        = "grocery-rds-sg"
+  description = "Allow Postgres from EC2"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description     = "Postgres from EC2"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ec2_sg.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "grocery-rds-sg"
+  }
+}
+
+# Subnet group for RDS (using your existing public subnet)
+resource "aws_db_subnet_group" "rds_subnet_group" {
+  name       = "grocery-rds-subnet-group"
+  subnet_ids = [aws_subnet.public.id]
+
+  tags = {
+    Name = "grocery-rds-subnet-group"
+  }
+}
+
+# RDS PostgreSQL instance
+resource "aws_db_instance" "postgres" {
+  allocated_storage      = var.db_allocated_storage
+  engine                 = "postgres"
+  engine_version         = "15"
+  instance_class         = var.db_instance_class
+  db_name                = var.db_name
+  username               = var.db_username
+  password               = var.db_password
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+  skip_final_snapshot    = true
+
+  tags = {
+    Name = "grocerymate-db"
+  }
+}
+
 
