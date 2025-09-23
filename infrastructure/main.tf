@@ -58,12 +58,12 @@ resource "aws_route_table_association" "public_assoc" {
 }
 
 # -------------------
-# Security
+# Security Groups
 # -------------------
 
 resource "aws_security_group" "ec2_sg" {
   name        = "grocery-ec2-sg"
-  description = "Allow SSH and HTTP"
+  description = "Allow SSH, HTTP, and Flask"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -112,10 +112,10 @@ resource "aws_key_pair" "hello_key" {
 # -------------------
 
 resource "aws_instance" "web" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  subnet_id     = aws_subnet.public.id
-  key_name      = aws_key_pair.hello_key.key_name
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  subnet_id              = aws_subnet.public.id
+  key_name               = aws_key_pair.hello_key.key_name
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
 
   tags = {
@@ -130,7 +130,7 @@ resource "aws_instance" "web" {
 # Security group for RDS (allow Postgres only from EC2 SG)
 resource "aws_security_group" "rds_sg" {
   name        = "grocery-rds-sg"
-  description = "Allow Postgres from EC2"
+  description = "Allow Postgres from EC2 only"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -153,7 +153,7 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-# Subnet group for RDS (using your existing public subnet)
+# Subnet group for RDS
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "grocery-rds-subnet-group"
   subnet_ids = [aws_subnet.public.id]
@@ -165,6 +165,7 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 
 # RDS PostgreSQL instance
 resource "aws_db_instance" "postgres" {
+  identifier             = "grocerymate-db"
   allocated_storage      = var.db_allocated_storage
   engine                 = "postgres"
   engine_version         = "15"
@@ -175,10 +176,9 @@ resource "aws_db_instance" "postgres" {
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
   skip_final_snapshot    = true
+  publicly_accessible    = false # safer default
 
   tags = {
     Name = "grocerymate-db"
   }
 }
-
-
