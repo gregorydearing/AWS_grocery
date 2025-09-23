@@ -28,3 +28,22 @@ output "s3_bucket_name" {
   value       = aws_s3_bucket.app_bucket.id
 }
 
+# -------------------
+# RDS Outputs
+# -------------------
+
+output "rds_endpoint" {
+  description = "The connection endpoint for the RDS PostgreSQL database"
+  value       = aws_db_instance.postgres.address
+}
+
+output "rds_db_name" {
+  description = "The name of the RDS PostgreSQL database"
+  value       = aws_db_instance.postgres.db_name
+}
+
+output "rds_username" {
+  description = "The master username for the RDS PostgreSQL database"
+  value       = aws_db_instance.postgres.username
+}
+
