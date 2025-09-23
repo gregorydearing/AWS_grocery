@@ -47,3 +47,7 @@ output "rds_username" {
   value       = aws_db_instance.postgres.username
 }
 
+output "rds_security_group_id" {
+  description = "Security group ID for RDS PostgreSQL"
+  value       = aws_security_group.rds_sg.id
+}
