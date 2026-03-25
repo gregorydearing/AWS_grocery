@@ -26,7 +26,7 @@
 
 ## 🚀 Overview
 
-GroceryMate is an e-commerce platform developed as part of the Masterschools program.  
+GroceryMate is an e-commerce platform developed as part of the Masterschool program.  
 It is a full-featured grocery shopping application with a modern user interface, secure backend, and scalable AWS infrastructure managed by Terraform.
 
 ---
